@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Note - StudyNotes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        secondary: {
+                            100: '#f1f5f9',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!--  Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                    </svg>
+                    <h1 class="text-2xl font-bold text-secondary-800">CourseNotes</h1>
+                </div>
+                <!-- <nav>
+                    <ul class="flex space-x-8">
+                        <li><a href="index.html" class="text-secondary-600 hover:text-primary-600 transition-colors">Home</a></li>
+                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">My Notes</a></li>
+                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Favorites</a></li>
+                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">About</a></li>
+                    </ul>
+                </nav> -->
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-semibold">
+                        JS
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow py-8">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <!-- Page header -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <a href="index.html" class="text-primary-600 hover:text-primary-700 mr-4 flex items-center transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Back to Notes
+                        </a>
+                    </div>
+                    <h1 class="text-3xl font-bold text-secondary-800">Create New Note</h1>
+                    <p class="text-secondary-600 mt-2">Add a new note to your collection</p>
+                </div>
+
+                <!-- Form card -->
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+                    <div class="p-6">
+                        <form>
+                            <div class="space-y-6">
+                                <!-- Title and Course -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="title" class="block text-sm font-medium text-secondary-700 mb-1">Note Title <span class="text-red-500">*</span></label>
+                                        <input type="text" id="title" name="title" required 
+                                            placeholder="Enter a descriptive title" 
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="course" class="block text-sm font-medium text-secondary-700 mb-1">Course <span class="text-red-500">*</span></label>
+                                        <select id="course" name="course" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                            <option value="">Select a course</option>
+                                            <option value="math">Mathematics</option>
+                                            <option value="science">Science</option>
+                                            <option value="history">History</option>
+                                            <option value="literature">Literature</option>
+                                            <option value="cs">Computer Science</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Tags -->
+                                <div>
+                                    <label for="tags" class="block text-sm font-medium text-secondary-700 mb-1">Tags (comma separated)</label>
+                                    <input type="text" id="tags" name="tags" 
+                                        placeholder="e.g., midterm, important, chapter 5" 
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                    <p class="mt-1 text-sm text-secondary-500">Add tags to help organize and find your notes later</p>
+                                </div>
+
+                                <!-- Content -->
+                                <div>
+                                    <label for="content" class="block text-sm font-medium text-secondary-700 mb-1">Note Content <span class="text-red-500">*</span></label>
+                                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-colors">
+                                        <!--  toolbar -->
+                                        <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 border-b border-gray-300">
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h12M6 18h12M6 6h12" />
+                                                </svg>
+                                            </button>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                                                </svg>
+                                            </button>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors font-bold">
+                                                B
+                                            </button>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors italic">
+                                                I
+                                            </button>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors underline">
+                                                U
+                                            </button>
+                                            <div class="h-5 border-r border-gray-300 mx-2"></div>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </button>
+                                            <button type="button" class="p-1 rounded hover:bg-gray-200 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <textarea id="content" name="content" rows="12" required
+                                            placeholder="Enter your notes here..." 
+                                            class="w-full px-4 py-3 focus:outline-none"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Attachments -->
+                                <div>
+                                    <label for="attachments" class="block text-sm font-medium text-secondary-700 mb-1">Attachments</label>
+                                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                                        <div class="space-y-1 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-secondary-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="flex text-sm text-gray-600">
+                                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                                                    <span>Upload files</span>
+                                                    <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                                                </label>
+                                                <p class="pl-1">or drag and drop</p>
+                                            </div>
+                                            <p class="text-xs text-secondary-500">
+                                                PDF, PNG, JPG, GIF up to 10MB
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Options -->
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="important" name="important" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors">
+                                        <label for="important" class="ml-2 block text-sm text-secondary-700">Mark as important</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="share" name="share" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors">
+                                        <label for="share" class="ml-2 block text-sm text-secondary-700">Share with classmates</label>
+                                    </div>
+                                </div>
+
+                                <!-- Submit buttons -->
+                                <div class="flex justify-end space-x-4 pt-4">
+                                    <a href="index.html" class="px-6 py-3 border border-gray-300 rounded-lg text-secondary-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                                        Create Note
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Simplified Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                    </svg>
+                    <span class="text-secondary-800 font-medium">CourseNotes</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
