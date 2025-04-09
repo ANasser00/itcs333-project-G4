@@ -1,1 +1,144 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    /* Responsive design styles */
+
+/* Small screens (mobile) */
+@media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    header h1 {
+      font-size: 1.5rem;
+    }
+    
+    header nav ul {
+      /* flex-direction: column; */
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .search-filters {
+      flex-direction: column;
+    }
+    
+    .search-filters > div {
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    
+    .note-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .action-buttons button,
+    .action-buttons a {
+      width: 100%;
+    }
+    
+    .comment-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .comment-actions {
+      margin-top: 0.5rem;
+    }
+  }
+  
+  /* Medium screens (tablets) */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .note-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-row {
+      flex-direction: column;
+    }
+    
+    .form-row > div {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  /* Large screens (desktops) */
+  @media (min-width: 1025px) {
+    .container {
+      max-width: 1200px;
+    }
+    
+    .note-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .sidebar {
+      display: block;
+    }
+  }
+  
+  /* Print styles */
+  @media print {
+    header, 
+    footer, 
+    .no-print {
+      display: none;
+    }
+    
+    body {
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #000;
+      background: #fff;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #000;
+    }
+    
+    .note-content {
+      page-break-inside: avoid;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid;
+    }
+    
+    img {
+      max-width: 100% !important;
+    }
+    
+    @page {
+      margin: 2cm;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .dark-mode-support {
+      background-color: #1f2937;
+      color: #f3f4f6;
+    }
+    
+    .dark-mode-support a {
+      color: #93c5fd;
+    }
+    
+    .dark-mode-support .card {
+      background-color: #374151;
+      border-color: #4b5563;
+    }
+    
+    .dark-mode-support input,
+    .dark-mode-support select,
+    .dark-mode-support textarea {
+      background-color: #374151;
+      border-color: #4b5563;
+      color: #f3f4f6;
+    }
+  }
