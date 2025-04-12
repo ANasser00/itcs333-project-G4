@@ -1,4 +1,4 @@
 # itcs333-project-G4
 
-Abdulnasser Fawzi 202008866 Course Notes Module 
-name:salman Mohammad iD:202004368 part:study grop finder user:salman04368
+Abdulnasser Fawzi 202008866 Course Notes Module  
+Salman Mohammad 202004368 Study Group Finder (GitHub: salman04368)
