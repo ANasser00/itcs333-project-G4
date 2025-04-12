@@ -6,3 +6,6 @@ Ebrahim Abdoulmoamen 202006318 Campus News Module
 
 
 Salman Mohammad 202004368 Study Group Finder (GitHub: salman04368)
+
+
+Hassan Abderrahman Hassan Elmaayati 202004160
