@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Reviews Listing</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Course Reviews</h1>
+  </header>
+
+  <main class="container">
+    <div class="search-sort">
+      <input type="text" placeholder="Search courses..." />
+      <select>
+        <option>Filter by rating</option>
+        <option>5 stars</option>
+        <option>4 stars & up</option>
+        <option>3 stars & up</option>
+      </select>
+      <select>
+        <option>Sort by</option>
+        <option>Newest</option>
+        <option>Oldest</option>
+        <option>Highest Rating</option>
+        <option>Lowest Rating</option>
+      </select>
+    </div>
+
+    <div class="listing-grid">
+      <div class="review-card">
+        <h3>Internet Software Development</h3>
+        <p><strong>Instructor:</strong> Dr. Abdulla Subah</p>
+        <p><strong>Rating:</strong> ★★★★☆</p>
+        <a href="detail.html">View Details</a>
+      </div>
+      <!-- Additional cards as needed -->
+    </div>
+
+    <div class="pagination">
+      <button disabled>Previous</button>
+      <button>Next</button>
+    </div>
+  </main>
+</body>
+</html>

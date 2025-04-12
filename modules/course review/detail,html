@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Review Details</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Course Review Details</h1>
+  </header>
+
+  <main class="container">
+    <article class="review-detail">
+      <h2>Course: Internet Software Development</h2>
+      <p><strong>Instructor:</strong> Dr. Abdulla Subah</p>
+      <p><strong>Rating:</strong> ★★★★☆</p>
+      <p><strong>Review:</strong> Great course! The examples were practical and easy to follow.</p>
+
+      <div class="review-actions">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+        <a href="listing.html" class="back-link">Back to Listing</a>
+      </div>
+
+      <section class="comments">
+        <h3>Comments</h3>
+        <div class="comment-box">Comments section (design only)</div>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

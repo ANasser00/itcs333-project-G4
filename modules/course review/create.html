@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Course Review</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Add New Course Review</h1>
+  </header>
+
+  <main class="container">
+    <form class="form">
+      <div class="form-group">
+        <label for="course">Course Title *</label>
+        <input type="text" id="course" name="course" required placeholder="e.g. Network Development" />
+      </div>
+      <div class="form-group">
+        <label for="instructor">Instructor Name *</label>
+        <input type="text" id="instructor" name="instructor" required placeholder="e.g. Dr. Abdulla Subah" />
+      </div>
+      <div class="form-group">
+        <label for="rating">Rating (1-5) *</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" required />
+      </div>
+      <div class="form-group">
+        <label for="review">Your Review *</label>
+        <textarea id="review" name="review" required placeholder="Write your feedback here..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit">Submit</button>
+        <a href="listing.html" class="cancel-link">Cancel</a>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
