@@ -47,7 +47,7 @@
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl font-bold text-secondary-800 mb-8 text-center">Available Modules</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     <!-- Course Notes Module -->
                     <a href="modules/course-notes/index.html" class="bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
                         <div class="p-6">
@@ -144,6 +144,54 @@
                             </div>
                         </div>
                     </a>
+
+                    <!-- Club Activities Module (NEW) -->
+                    <a href="#" class="bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-indigo-100 p-3 rounded-lg mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-secondary-800">Club Activities</h3>
+                            </div>
+                            <p class="text-secondary-600 mb-4">Discover and join student clubs and organizations. Find events, meetings, and opportunities to engage with campus life.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-indigo-600 font-medium">45 Active Clubs</span>
+                                <span class="inline-flex items-center text-indigo-600 font-medium">
+                                    Access Now
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Student Marketplace Module (NEW) -->
+                    <a href="#" class="bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-orange-100 p-3 rounded-lg mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-secondary-800">Student Marketplace</h3>
+                            </div>
+                            <p class="text-secondary-600 mb-4">Buy, sell, or exchange textbooks, supplies, and other items with fellow students. Find great deals on campus essentials.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-orange-600 font-medium">120+ Active Listings</span>
+                                <span class="inline-flex items-center text-orange-600 font-medium">
+                                    Access Now
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </section>
@@ -151,7 +199,7 @@
         <!-- Quick Stats -->
         <section class="py-8 bg-white border-t border-gray-200">
             <div class="container mx-auto px-4">
-                <div class="grid grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
                     <div class="text-center">
                         <p class="text-3xl font-bold text-blue-500">24</p>
                         <p class="text-secondary-600">Course Notes</p>
@@ -167,6 +215,14 @@
                     <div class="text-center">
                         <p class="text-3xl font-bold text-purple-600">18</p>
                         <p class="text-secondary-600">News Articles</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-indigo-600">45</p>
+                        <p class="text-secondary-600">Active Clubs</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-orange-600">120+</p>
+                        <p class="text-secondary-600">Marketplace Items</p>
                     </div>
                 </div>
             </div>
