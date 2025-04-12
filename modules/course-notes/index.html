@@ -4,62 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Notes - Main Listing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                        },
-                        secondary: {
-                            100: '#f1f5f9',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                        }
-                    },
-                    boxShadow: {
-                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-                    }
-                },
-            },
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="../css/tailwind.config.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Simplified Header -->
+    <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                     </svg>
-                    <h1 class="text-2xl font-bold  text-secondary-800">CourseNotes</h1>
+                    <h1 class="text-2xl font-bold text-secondary-800">CourseNotes</h1>
                 </div>
-                <!-- <nav>
-                    <ul class="flex space-x-8">
-                        <li><a href="index.html" class="text-primary-600 font-medium border-b-2 border-primary-500 pb-1">Home</a></li>
-                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">My Notes</a></li>
-                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Favorites</a></li>
-                        <li><a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">About</a></li>
-                    </ul>
-                </nav> -->
                 <div class="flex items-center space-x-4">
                     <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                     </button>
-                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-semibold">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold">
                         JS
                     </div>
                 </div>
@@ -68,20 +34,20 @@
     </header>
 
     <main class="flex-grow">
-          <!-- Stats overview - Removed Recent Updates, kept only 3 stats -->
+          <!-- Stats overview -->
           <section class="py-8 bg-white border-b border-gray-200">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-primary-600">24</p>
+                        <p class="text-3xl font-bold text-blue-500">24</p>
                         <p class="text-secondary-600">Total Notes</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-primary-600">6</p>
+                        <p class="text-3xl font-bold text-blue-500">6</p>
                         <p class="text-secondary-600">Courses</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-primary-600">5</p>
+                        <p class="text-3xl font-bold text-blue-500">5</p>
                         <p class="text-secondary-600">Shared Notes</p>
                     </div>
                 </div>
@@ -418,6 +384,7 @@
                     </svg>
                     <span class="text-secondary-800 font-medium">CourseNotes</span>
                 </div>
+                <p class="text-secondary-600 text-sm">&copy; 2023 CourseNotes. All rights reserved.</p>
             </div>
         </div>
     </footer>
