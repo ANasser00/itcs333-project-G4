@@ -72,7 +72,14 @@
 
 /* Orange */
 .bg-orange-100 { background-color: #ffedd5; }
+.bg-orange-500 { background-color: #f97316; }
+.bg-orange-600 { background-color: #ea580c; }
+.bg-orange-700 { background-color: #c2410c; }
+.text-orange-500 { color: #f97316; }
 .text-orange-600 { color: #ea580c; }
+.text-orange-700 { color: #c2410c; }
+.border-orange-500 { border-color: #f97316; }
+.border-orange-600 { border-color: #ea580c; }
 
 /* Teal */
 .bg-teal-100 { background-color: #ccfbf1; }
