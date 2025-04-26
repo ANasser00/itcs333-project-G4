@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus News - Main Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">Campus News</h1>
+      <a href="add.html" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        Add News
+      </a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="container mx-auto px-4 py-6">
+
+    <!-- Controls: Search, Filter, Sort -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Search Bar -->
+      <input type="text" id="search-input" placeholder="Search news..." class="border p-2 rounded">
+
+      <!-- Filter by Category -->
+      <select id="category-filter" class="border p-2 rounded">
+        <option value="All">All Categories</option>
+        <option value="Events">Events</option>
+        <option value="Announcement">Announcement</option>
+        <option value="Opportunity">Opportunity</option>
+      </select>
+
+      <!-- Sort by Date -->
+      <select id="date-sort" class="border p-2 rounded">
+        <option value="newest">Sort by Newest</option>
+        <option value="oldest">Sort by Oldest</option>
+      </select>
+
+      <!-- (Optional) Sort by Title -->
+      <select id="sort-select" class="border p-2 rounded">
+        <option value="default">Sort by Title</option>
+        <option value="title-asc">Title A-Z</option>
+        <option value="title-desc">Title Z-A</option>
+      </select>
+
+    </div>
+
+    <!-- News container -->
+    <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- News will be inserted dynamically here -->
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex justify-center mt-8 space-x-2">
+      <!-- Pagination buttons will appear here -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white shadow mt-12">
+    <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+      &copy; 2025 Campus Hub. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+
+</body>
+</html>
