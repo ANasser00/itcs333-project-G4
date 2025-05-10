@@ -220,3 +220,30 @@ if (newsForm) {
         }
     });
 }
+
+// ==================== Comment Section for read.html ====================
+
+const commentForm = document.getElementById('comment-form');
+const commentsList = document.getElementById('comments-list');
+
+if (commentForm) {
+    commentForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById('comment-name').value.trim();
+        const text = document.getElementById('comment-text').value.trim();
+
+        if (name && text) {
+            const commentBox = document.createElement('div');
+            commentBox.className = 'border p-4 rounded shadow-sm bg-gray-50';
+
+            commentBox.innerHTML = `
+                <p class="font-bold text-gray-800">${name}</p>
+                <p class="text-gray-700 mt-1">${text}</p>
+            `;
+
+            commentsList.prepend(commentBox);
+            commentForm.reset();
+        }
+    });
+}
