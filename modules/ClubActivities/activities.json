@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Debate Night",
+    "club": "Public Speaking Club",
+    "date": "2025-04-25",
+    "time": "18:00",
+    "location": "Hall B, Room 3",
+    "description": "An exciting night of debates and public speaking challenges."
+  },
+  {
+    "id": 2,
+    "title": "Chess Tournament",
+    "club": "Chess Club",
+    "date": "2025-04-20",
+    "time": "15:00",
+    "location": "Building A - Room 204",
+    "description": "Join us for a chess battle of minds!"
+  },
+  {
+    "id": 3,
+    "title": "Art Workshop",
+    "club": "Art Club",
+    "date": "2025-04-18",
+    "time": "14:00",
+    "location": "Student Center",
+    "description": "Hands-on watercolor and sketching session."
+  }
+]

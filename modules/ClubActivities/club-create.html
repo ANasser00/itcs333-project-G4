@@ -99,5 +99,69 @@
   <footer class="bg-white border-t border-gray-200 py-4 text-center text-sm text-secondary-500">
     &copy; 2025 CampusHub. All rights reserved.
   </footer>
+
+  <script>
+document.querySelector('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const required = ['title', 'club', 'date', 'time', 'location', 'description'];
+  let valid = true;
+
+  required.forEach(id => {
+    const field = document.getElementById(id);
+    if (!field.value.trim()) {
+      field.classList.add('border-red-500');
+      valid = false;
+    } else {
+      field.classList.remove('border-red-500');
+    }
+  });
+
+  if (valid) {
+    alert("Activity submitted (simulation).");
+    window.location.href = "club-index.html";
+  }
+});
+</script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const editId = params.get('id');
+
+  if (editId) {
+    fetch('activities.json')
+      .then(res => res.json())
+      .then(data => {
+        const activity = data.find(a => a.id == editId);
+        if (activity) {
+          document.getElementById('title').value = activity.title;
+          document.getElementById('club').value = activity.club;
+          document.getElementById('date').value = activity.date;
+          document.getElementById('time').value = activity.time;
+          document.getElementById('location').value = activity.location;
+          document.getElementById('description').value = activity.description;
+        }
+      });
+  }
+
+  document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const required = ['title', 'club', 'date', 'time', 'location', 'description'];
+    let valid = true;
+
+    required.forEach(id => {
+      const field = document.getElementById(id);
+      if (!field.value.trim()) {
+        field.classList.add('border-red-500');
+        valid = false;
+      } else {
+        field.classList.remove('border-red-500');
+      }
+    });
+
+    if (valid) {
+      window.location.href = "club-index.html";
+    }
+  });
+</script>
+
 </body>
 </html>
