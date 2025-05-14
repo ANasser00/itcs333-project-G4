@@ -290,7 +290,7 @@ function initLoadingIndicator() {
         alert(result.error)
       } else {
         alert("Note deleted successfully")
-        window.location.href = "/modules/course-notes/index.html"
+        window.location.href = "../index.html"
       }
     })
   
