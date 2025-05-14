@@ -1,3 +1,5 @@
+import { deleteNote } from "./api.js";
+
 /**
  * UI components and interactions for Course Notes application
  * Handles rendering, UI state, and user interactions
@@ -56,12 +58,6 @@ function initLoadingIndicator() {
   
     // Render each note
     notes.forEach((note) => {
-      const formattedDate = new Date(note.createdAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-  
       const noteCard = document.createElement("article")
       noteCard.className =
         "bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100"
@@ -69,7 +65,7 @@ function initLoadingIndicator() {
         <div class="p-6">
           <div class="flex justify-between items-start mb-3">
             <div>
-              <span class="inline-block bg-${note.courseColor}-100 text-${note.courseColor}-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-2">${note.courseType}</span>
+              <span class="inline-block bg-${note.courseColor}-100 text-${note.courseColor}-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-2">${note.course}</span>
               <h3 class="text-xl font-semibold text-secondary-800 hover:text-blue-600 transition-colors">
                 <a href="pages/detail.html?id=${note.id}">${note.title}</a>
               </h3>
@@ -81,23 +77,6 @@ function initLoadingIndicator() {
             </button>
           </div>
           <p class="text-secondary-600 mb-4 line-clamp-3">${note.content}</p>
-          <div class="flex flex-wrap gap-2 mb-4">
-            ${note.tags.map((tag) => `<span class="bg-gray-100 text-secondary-700 text-xs px-2 py-1 rounded">${tag}</span>`).join("")}
-          </div>
-          <div class="flex justify-between items-center text-sm text-secondary-500">
-            <span class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              ${formattedDate}
-            </span>
-            <span class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              ${note.pages} pages
-            </span>
-          </div>
         </div>
       `
   
@@ -248,13 +227,7 @@ function initLoadingIndicator() {
   function renderNoteDetail(note, container) {
     if (!container || !note) return
   
-    const createdDate = new Date(note.createdAt).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  
-    const updatedDate = new Date(note.updatedAt).toLocaleDateString("en-US", {
+    const createdDate = new Date(note.created_at).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -271,11 +244,10 @@ function initLoadingIndicator() {
             <div>
               <div class="flex items-center mb-2">
                 <h2 class="text-3xl font-bold text-secondary-800 mr-3">${note.title}</h2>
-                <span class="bg-${note.courseColor}-100 text-${note.courseColor}-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${note.courseType}</span>
+                <span class="bg-${note.courseColor}-100 text-${note.courseColor}-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${note.course}</span>
               </div>
               <div class="flex items-center text-sm text-secondary-500">
                 <span class="mr-4">Created: ${createdDate}</span>
-                <span>Updated: ${updatedDate}</span>
               </div>
             </div>
             <div class="flex space-x-2 mt-4 md:mt-0">
@@ -291,7 +263,7 @@ function initLoadingIndicator() {
                 </svg>
                 Edit
               </a>
-              <button class="flex items-center px-3 py-1.5 border border-red-300 rounded-md hover:bg-red-50 text-red-700 transition-colors">
+              <button id="delete-note" class="flex items-center px-3 py-1.5 border border-red-300 rounded-md hover:bg-red-50 text-red-700 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
@@ -300,46 +272,27 @@ function initLoadingIndicator() {
             </div>
           </div>
   
-          <div class="flex flex-wrap gap-2 mb-6">
-            ${note.tags.map((tag) => `<span class="bg-gray-100 text-secondary-700 text-xs font-medium px-2.5 py-0.5 rounded">${tag}</span>`).join("")}
-          </div>
-  
           <div class="prose max-w-none">
             ${note.content
               .split("\n")
               .map((paragraph) => `<p class="text-secondary-700 mb-4">${paragraph}</p>`)
               .join("")}
           </div>
-  
-          ${
-            note.attachments.length > 0
-              ? `
-            <div class="border-t border-gray-200 mt-8 pt-8">
-              <h3 class="text-xl font-semibold mb-4">Attachments</h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${note.attachments
-                  .map(
-                    (attachment) => `
-                  <a href="#" class="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-${attachment.type === "pdf" ? "red" : attachment.type === "doc" ? "blue" : "green"}-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    <div>
-                      <p class="font-medium">${attachment.name}</p>
-                      <p class="text-sm text-secondary-500">${attachment.type.toUpperCase()}, ${attachment.size}</p>
-                    </div>
-                  </a>
-                `,
-                  )
-                  .join("")}
               </div>
             </div>
-          `
-              : ""
-          }
         </div>
       </article>
     `
+
+    document.getElementById("delete-note").addEventListener("click", () => {
+      const result = deleteNote(note.id)
+      if (result.error) {
+        alert(result.error)
+      } else {
+        alert("Note deleted successfully")
+        window.location.href = "/modules/course-notes/index.html"
+      }
+    })
   
     // Render comments section
     if (note.comments && note.comments.length > 0) {

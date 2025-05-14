@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Notes - Main Listing</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="../shared/css/tailwind.config.css">
+    <!-- Remove the problematic stylesheet reference -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        /* Add any custom styles here */
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
@@ -19,23 +32,120 @@
                     </svg>
                     <h1 class="text-2xl font-bold text-secondary-800">CourseNotes</h1>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                        <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg> -->
-                    </button>
+                
+                <!-- User section (shown when logged in) -->
+                <div id="user-section" class="flex items-center space-x-4 hidden">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-secondary-700">Welcome, <span class="user-name font-medium">User</span></span>
+                        <button id="logout-btn" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Logout</button>
+                    </div>
                     <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold">
                         JS
                     </div>
+                </div>
+                
+                <!-- Auth buttons (shown when logged out) -->
+                <div id="auth-section" class="flex items-center space-x-2">
+                    <button id="login-button" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-secondary-700 hover:bg-gray-50 transition-colors">
+                        Login
+                    </button>
+                    <button id="register-button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        Sign Up
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0">
+        <div class="modal-content bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <!-- Login Form -->
+            <div id="login-container" class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-secondary-800">Login</h2>
+                    <button class="modal-close text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="login-email" class="block text-sm font-medium text-secondary-700 mb-1">Email</label>
+                        <input type="email" id="login-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="login-password" class="block text-sm font-medium text-secondary-700 mb-1">Password</label>
+                        <input type="password" id="login-password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="flex flex-col space-y-4">
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Login
+                        </button>
+                        
+                        <div class="text-center">
+                            <span class="text-secondary-600 text-sm">Don't have an account?</span>
+                            <button id="switch-to-register" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-1">Sign up</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-container" class="p-6 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-secondary-800">Create Account</h2>
+                    <button class="modal-close text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="register-form">
+                    <div class="mb-4">
+                        <label for="register-username" class="block text-sm font-medium text-secondary-700 mb-1">Username</label>
+                        <input type="text" id="register-username" name="username" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="register-email" class="block text-sm font-medium text-secondary-700 mb-1">Email</label>
+                        <input type="email" id="register-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="register-password" class="block text-sm font-medium text-secondary-700 mb-1">Password</label>
+                        <input type="password" id="register-password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="register-confirm-password" class="block text-sm font-medium text-secondary-700 mb-1">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" name="confirm_password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="flex flex-col space-y-4">
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Create Account
+                        </button>
+                        
+                        <div class="text-center">
+                            <span class="text-secondary-600 text-sm">Already have an account?</span>
+                            <button id="switch-to-login" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-1">Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest of your HTML content remains the same -->
     <main class="flex-grow">
-          <!-- Stats overview -->
-          <section class="py-8 bg-white border-b border-gray-200">
+        <!-- Stats overview -->
+        <section class="py-8 bg-white border-b border-gray-200">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
                     <div class="text-center">
@@ -45,14 +155,10 @@
                         <p class="text-secondary-600">Total Notes</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-500 stats-total-courses">6</p>
-                        <p class="text-secondary-600">Courses</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-500 stats-total-shared">
+                        <p class="text-3xl font-bold text-blue-500 stats-total-courses">
                             <span class="inline-block animate-pulse">...</span>
                         </p>
-                        <p class="text-secondary-600">Shared Notes</p>
+                        <p class="text-secondary-600">Courses</p>
                     </div>
                 </div>
             </div>
@@ -61,52 +167,8 @@
         <!-- Main content -->
         <section id="notes" class="py-12">
             <div class="container mx-auto px-4">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                    <h2 class="text-2xl font-bold text-secondary-800 mb-4 md:mb-0">All Course Notes</h2>
-                    <div class="flex space-x-2">
-                        <div class="relative">
-                            <!-- <button class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-secondary-700 hover:bg-gray-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                </svg>
-                                <span>Filter</span>
-                            </button> -->
-                        </div>
-                        <div class="relative">
-                            <button class="sort-button flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-secondary-700 hover:bg-gray-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                                </svg>
-                                <span>Sort</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search bar -->
-                <div class="bg-white rounded-xl shadow-soft p-4 mb-8">
-                    <form id="search-form" class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <input type="search" placeholder="Search notes by title, or content..." class="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-colors">
-                    </form>
-                </div>
-
-                <!-- Course filters -->
-                <div class="flex flex-wrap gap-2 mb-8">
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">All</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Mathematics</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Science</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">History</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Literature</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Computer Science</button>
-                    <button class="bg-white text-secondary-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Chemistry</button>
-                </div>
-
-                <!-- Notes grid -->
+                <!-- Your existing content -->
+                <!-- Notes grid and other elements -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Notes will be dynamically inserted here by JavaScript -->
                 </div>
@@ -145,5 +207,95 @@
 
     <!-- JavaScript -->
     <script type="module" src="js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Modal functionality
+            const authModal = document.getElementById("auth-modal");
+            const loginButton = document.getElementById("login-button");
+            const registerButton = document.getElementById("register-button");
+            const closeButtons = document.querySelectorAll(".modal-close");
+            const switchToRegisterBtn = document.getElementById("switch-to-register");
+            const switchToLoginBtn = document.getElementById("switch-to-login");
+            
+            // Open modal functions
+            function openModal() {
+                authModal.classList.remove("hidden");
+                setTimeout(() => {
+                    authModal.classList.add("active");
+                    authModal.classList.add("opacity-100");
+                }, 10);
+            }
+            
+            function closeModal() {
+                authModal.classList.remove("active");
+                authModal.classList.remove("opacity-100");
+                setTimeout(() => {
+                    authModal.classList.add("hidden");
+                }, 300);
+            }
+            
+            // Event listeners for opening modal
+            loginButton.addEventListener("click", () => {
+                document.getElementById("login-container").classList.remove("hidden");
+                document.getElementById("register-container").classList.add("hidden");
+                openModal();
+            });
+            
+            registerButton.addEventListener("click", () => {
+                document.getElementById("register-container").classList.remove("hidden");
+                document.getElementById("login-container").classList.add("hidden");
+                openModal();
+            });
+            
+            // Close modal when clicking close button or outside
+            closeButtons.forEach(button => {
+                button.addEventListener("click", closeModal);
+            });
+            
+            authModal.addEventListener("click", (e) => {
+                if (e.target === authModal) {
+                    closeModal();
+                }
+            });
+            
+            // Switch between login and register forms
+            switchToRegisterBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                document.getElementById("login-container").classList.add("hidden");
+                document.getElementById("register-container").classList.remove("hidden");
+            });
+            
+            switchToLoginBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                document.getElementById("register-container").classList.add("hidden");
+                document.getElementById("login-container").classList.remove("hidden");
+            });
+            
+            // Simple form handling for testing
+            const loginForm = document.getElementById("login-form");
+            const registerForm = document.getElementById("register-form");
+            
+            loginForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = document.getElementById("login-email").value;
+                const password = document.getElementById("login-password").value;
+                
+                console.log("Login attempt:", { email, password });
+                // Here you would normally call your API
+                alert(`Login attempt with email: ${email}`);
+            });
+            
+            registerForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const username = document.getElementById("register-username").value;
+                const email = document.getElementById("register-email").value;
+                const password = document.getElementById("register-password").value;
+                
+                console.log("Register attempt:", { username, email, password });
+                // Here you would normally call your API
+                alert(`Registration attempt with username: ${username}, email: ${email}`);
+            });
+        });
+    </script>
 </body>
-</html>
+</html> 
