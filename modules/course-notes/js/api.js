@@ -1,267 +1,332 @@
 /**
  * API integration for Course Notes application
  * Handles data fetching, error handling, and data transformation
+ * Connects to Replit backend server running MariaDB
  */
 
-// API endpoints
+// API endpoints - update this to your Replit URL
+const API_BASE_URL = "https://3de20392-c7ee-4889-996e-a1c21667d9a9-00-3aqyltz0su95g.sisko.replit.dev";
+
+// API endpoints structure
 const API_ENDPOINTS = {
-    notes: "https://jsonplaceholder.typicode.com/posts",
-    users: "https://jsonplaceholder.typicode.com/users",
-    comments: "https://jsonplaceholder.typicode.com/comments",
-  }
-  
-  /**
-   * Fetch data from API with error handling and loading state
-   * @param {string} endpoint - API endpoint to fetch from
-   * @param {Object} options - Fetch options
-   * @returns {Promise} - Promise with data or error
-   */
-  async function fetchData(endpoint, options = {}) {
-    try {
-      // Show loading state
-      document.dispatchEvent(new CustomEvent("loading:start"))
-  
-      const response = await fetch(endpoint, options)
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-  
-      const data = await response.json()
-  
-      // End loading state
-      document.dispatchEvent(new CustomEvent("loading:end"))
-  
-      return { data, error: null, headers: response.headers }
-    } catch (error) {
-      console.error("Fetch error:", error)
-  
-      // End loading state
-      document.dispatchEvent(new CustomEvent("loading:end"))
-  
-      return { data: null, error: error.message }
+  notes: `${API_BASE_URL}/notes`,
+  courses: `${API_BASE_URL}/courses`,
+  tags: `${API_BASE_URL}/tags`,
+  auth: `${API_BASE_URL}/auth`,
+}
+
+/**
+ * Get auth token from local storage
+ * @returns {string|null} - Auth token or null if not logged in
+ */
+function getAuthToken() {
+  return localStorage.getItem("auth_token");
+}
+
+/**
+ * Fetch data from API with error handling and loading state
+ * @param {string} endpoint - API endpoint to fetch from
+ * @param {Object} options - Fetch options
+ * @returns {Promise} - Promise with data or error
+ */
+async function fetchData(endpoint, options = {}) {
+  try {
+    // Show loading state
+    document.dispatchEvent(new CustomEvent("loading:start"))
+
+    // Add auth token to headers if available
+    const headers = options.headers || {};
+    const token = getAuthToken();
+    
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
     }
+    
+    // If content type is not set and method is not GET, set it to JSON
+    if (!headers["Content-Type"] && options.method && options.method !== "GET") {
+      headers["Content-Type"] = "application/json";
+    }
+    
+    // Add mode: 'cors' to enable CORS requests
+    options = {
+      ...options,
+      headers,
+      mode: "cors"
+    };
+
+    const response = await fetch(endpoint, options);
+
+    // End loading state in case of any errors
+    document.dispatchEvent(new CustomEvent("loading:end"));
+
+    // Handle unauthorized access
+    if (response.status === 401) {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("current_user");
+      window.location.href = "/login.html";
+      return { data: null, error: "Unauthorized access. Please login again." };
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! Status: ${response.status}, ${errorText}`);
+    }
+
+    const data = await response.json();
+    return { data, error: null, headers: response.headers };
+  } catch (error) {
+    console.error("Fetch error:", error);
+    document.dispatchEvent(new CustomEvent("loading:end"));
+    return { data: null, error: error.message };
   }
-  
-  /**
-   * Get all course notes
-   * @param {Object} filters - Optional filters to apply
-   * @param {number} page - Page number for pagination
-   * @param {number} limit - Number of items per page
-   * @param {boolean} fetchAll - Whether to fetch all notes
-   * @returns {Promise} - Promise with notes data
-   */
-  async function getNotes(filters = {}, page = 1, limit = 10, fetchAll = false) {
+}
+
+/**
+ * Get all course notes
+ * @param {Object} filters - Optional filters to apply
+ * @param {number} page - Page number for pagination
+ * @param {number} limit - Number of items per page
+ * @param {boolean} fetchAll - Whether to fetch all notes
+ * @returns {Promise} - Promise with notes data
+ */
+async function getNotes(filters = {}, page = 1, limit = 10, fetchAll = false) {
+  try {
     // Build query parameters
-    const queryParams = new URLSearchParams()
+    const queryParams = new URLSearchParams();
+    
+    // Add pagination
     if (!fetchAll) {
-      queryParams.append("_page", page)
-      queryParams.append("_limit", limit)
-    }else{
-        queryParams.append("_limit", 500)
+      queryParams.append("page", page);
+      queryParams.append("limit", limit);
+    } else {
+      queryParams.append("limit", 500);
     }
-  
+
     // Add filters to query params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && key !== "course") queryParams.append(key, value)
-    })
-  
-    const url = `${API_ENDPOINTS.notes}?${queryParams.toString()}`
-    const result = await fetchData(url)
-  
-    // Transform data to match our application needs
+    if (filters.q) queryParams.append("search", filters.q);
+    if (filters.course) queryParams.append("course_id", filters.course);
+    if (filters._sort && filters._order) {
+      queryParams.append("sort", filters._sort);
+      queryParams.append("order", filters._order);
+    }
+
+    const url = `${API_ENDPOINTS.notes}_fetch.php?${queryParams.toString()}`;
+    const result = await fetchData(url);
+
     if (result.data) {
-      // Get total count from headers
-      const totalCount = result.headers ? Number.parseInt(result.headers.get("x-total-count") || "0") : 0
-  
-      // Course mapping
-      const courseTypes = ["Computer Science", "Mathematics", "History", "Literature", "Science", "Chemistry"]
-      const courseColors = ["green", "blue", "yellow", "purple", "red", "teal"]
-  
-      // Transform API data to our note format
-      let notes = result.data.map((item) => {
-        // Assign a consistent course type based on the item ID to ensure consistency
-        const courseIndex = item.id % courseTypes.length
-  
-        return {
-          id: item.id,
-          title: item.title,
-          content: item.body,
-          courseId: courseIndex + 1,
-          courseType: courseTypes[courseIndex],
-          courseColor: courseColors[courseIndex],
-          tags: generateRandomTags(),
-          createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-          updatedAt: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString(),
-          pages: Math.floor(Math.random() * 20) + 1,
-        }
-      })
-  
-      // Apply course filter if specified
-      if (filters.course && filters.course !== "All") {
-        notes = notes.filter((note) => note.courseType === filters.course)
-      }
-  
       return {
-        notes,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
-          totalItems: totalCount, // Use totalCount from headers instead of notes.length
-        },
+        notes: result.data || [],
+        pagination: result.data.pagination || { currentPage: 1, totalPages: 0, totalItems: 0 },
         error: null,
-      }
+      };
     }
+
+    return { 
+      notes: [], 
+      pagination: { currentPage: 1, totalPages: 0, totalItems: 0 }, 
+      error: result.error 
+    };
+  } catch (error) {
+    console.error("Error in getNotes:", error);
+    return { 
+      notes: [], 
+      pagination: { currentPage: 1, totalPages: 0, totalItems: 0 }, 
+      error: error.message 
+    };
+  }
+}
+
+/**
+ * Get a single note by ID
+ * @param {number} id - Note ID
+ * @returns {Promise} - Promise with note data
+ */
+async function getNoteById(id) {
+  const result = await fetchData(`${API_ENDPOINTS.notes}_read.php?id=${id}`);
+
+  if (result.data) {
+    return { note: result.data, error: null };
+  }
+
+  return { note: null, error: result.error };
+}
+
+/**
+ * Create a new note
+ * @param {Object} noteData - Note data to create
+ * @returns {Promise} - Promise with created note
+ */
+async function createNote(noteData) {
+  // Adapt the noteData to match the PHP backend expectations
+  const adaptedData = {
+    title: noteData.title,
+    content: noteData.content,
+    course_id: noteData.course_id || noteData.course, // Support both formats
+    user_id: noteData.user_id || 1 // Default user ID if not provided
+  };
+
+  const result = await fetchData(`${API_ENDPOINTS.notes}.add.php`, {
+    method: "POST",
+    body: JSON.stringify(adaptedData),
+  });
+
+  return result;
+}
+
+/**
+ * Update an existing note
+ * @param {number} id - Note ID
+ * @param {Object} noteData - Updated note data
+ * @returns {Promise} - Promise with updated note
+ */
+async function updateNote(id, noteData) {
+  const result = await fetchData(`${API_ENDPOINTS.notes}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(noteData),
+  });
+
+  return result;
+}
+
+/**
+ * Delete a note
+ * @param {number} id - Note ID
+ * @returns {Promise} - Promise with result
+ */
+async function deleteNote(id) {
+  const result = await fetchData(`${API_ENDPOINTS.notes}_delete.php?id=${id}`, {
+    method: "DELETE",
+  });
+
+  return result;
+}
+
+/**
+ * Get all courses
+ * @returns {Promise} - Promise with courses data
+ */
+async function getCourses() {
+  // For now, we'll use the hardcoded course data provided in the PHP script
+  const coursesData = [
+    {"id":"1","course_code":"CS101","course_name":"Introduction to Programming","created_at":"2025-05-14 09:59:07"},
+    {"id":"2","course_code":"CS201","course_name":"Data Structures and Algorithms","created_at":"2025-05-14 09:59:07"},
+    {"id":"3","course_code":"MATH101","course_name":"Calculus I","created_at":"2025-05-14 09:59:07"},
+    {"id":"4","course_code":"PHY201","course_name":"Physics Mechanics","created_at":"2025-05-14 09:59:07"},
+    {"id":"5","course_code":"ENG101","course_name":"English Composition","created_at":"2025-05-14 09:59:07"},
+    {"id":"6","course_code":"BIO101","course_name":"Introduction to Biology","created_at":"2025-05-14 09:59:07"}
+  ];
   
-    return { notes: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0 }, error: result.error }
+  return { data: coursesData, error: null };
+}
+
+/**
+ * Get all tags
+ * @returns {Promise} - Promise with tags data
+ */
+async function getTags() {
+  const result = await fetchData(API_ENDPOINTS.tags);
+  
+  if (result.data) {
+    return { tags: result.data.tags || [], error: null };
   }
   
-  /**
-   * Get a single note by ID
-   * @param {number} id - Note ID
-   * @returns {Promise} - Promise with note data
-   */
-  async function getNoteById(id) {
-    const result = await fetchData(`${API_ENDPOINTS.notes}/${id}`)
-  
-    if (result.data) {
-      // Course mapping - ensure consistent course type based on ID
-      const courseTypes = ["Computer Science", "Mathematics", "History", "Literature", "Science", "Chemistry"]
-      const courseColors = ["green", "blue", "yellow", "purple", "red", "teal"]
-      const courseIndex = result.data.id % courseTypes.length
-  
-      // Transform API data to our note format
-      const note = {
-        id: result.data.id,
-        title: result.data.title,
-        content: result.data.body,
-        courseId: courseIndex + 1,
-        courseType: courseTypes[courseIndex],
-        courseColor: courseColors[courseIndex],
-        tags: generateRandomTags(),
-        createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-        updatedAt: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString(),
-        pages: Math.floor(Math.random() * 20) + 1,
-        // Additional details for the detail view
-        attachments: generateRandomAttachments(),
-      }
-  
-      // Get comments for this note
-      const commentsResult = await fetchData(`${API_ENDPOINTS.comments}?postId=${id}`)
-      if (commentsResult.data) {
-        note.comments = commentsResult.data.map((comment) => ({
-          id: comment.id,
-          name: comment.name,
-          email: comment.email,
-          body: comment.body,
-          date: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString(),
-          initials: getInitials(comment.name),
-        }))
-      } else {
-        note.comments = []
-      }
-  
-      return { note, error: null }
-    }
-  
-    return { note: null, error: result.error }
+  return { tags: [], error: result.error };
+}
+
+/**
+ * Login user
+ * @param {Object} credentials - User credentials (email and password)
+ * @returns {Promise} - Promise with user data and token
+ */
+async function login(credentials) {
+  const result = await fetchData(`${API_ENDPOINTS.auth}/login`, {
+    method: "POST",
+    body: JSON.stringify(credentials),
+  });
+
+  if (result.data && result.data.success) {
+    // Store token in localStorage
+    localStorage.setItem("auth_token", result.data.token);
+    localStorage.setItem("current_user", JSON.stringify(result.data.user));
   }
-  
-  /**
-   * Create a new note
-   * @param {Object} noteData - Note data to create
-   * @returns {Promise} - Promise with created note
-   */
-  async function createNote(noteData) {
-    const result = await fetchData(API_ENDPOINTS.notes, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(noteData),
-    })
-  
-    return result
+
+  return result;
+}
+
+/**
+ * Register new user
+ * @param {Object} userData - User data
+ * @returns {Promise} - Promise with user data and token
+ */
+async function register(userData) {
+  const result = await fetchData(`${API_ENDPOINTS.auth}/register`, {
+    method: "POST",
+    body: JSON.stringify(userData),
+  });
+
+  if (result.data && result.data.success) {
+    // Store token in localStorage
+    localStorage.setItem("auth_token", result.data.token);
+    localStorage.setItem("current_user", JSON.stringify(result.data.user));
   }
-  
-  /**
-   * Generate random tags for mock data
-   * @returns {Array} - Array of random tags
-   */
-  function generateRandomTags() {
-    const allTags = [
-      "algorithms",
-      "sorting",
-      "big o",
-      "calculus",
-      "integration",
-      "math",
-      "history",
-      "literature",
-      "physics",
-      "chemistry",
-      "biology",
-      "frontend",
-      "frameworks",
-      "web",
-      "renaissance",
-      "art",
-      "europe",
-      "organic",
-      "reactions",
-      "shakespeare",
-      "tragedy",
-      "analysis",
-    ]
-    const numTags = Math.floor(Math.random() * 3) + 1
-    const tags = []
-  
-    for (let i = 0; i < numTags; i++) {
-      const randomIndex = Math.floor(Math.random() * allTags.length)
-      if (!tags.includes(allTags[randomIndex])) {
-        tags.push(allTags[randomIndex])
-      }
-    }
-  
-    return tags
-  }
-  
-  /**
-   * Generate random attachments for mock data
-   * @returns {Array} - Array of random attachments
-   */
-  function generateRandomAttachments() {
-    const attachmentTypes = ["pdf", "doc", "jpg", "png"]
-    const attachmentNames = ["lecture_notes", "summary", "cheatsheet", "diagram", "example", "practice_problems"]
-    const numAttachments = Math.floor(Math.random() * 3)
-    const attachments = []
-  
-    for (let i = 0; i < numAttachments; i++) {
-      const type = attachmentTypes[Math.floor(Math.random() * attachmentTypes.length)]
-      const name = attachmentNames[Math.floor(Math.random() * attachmentNames.length)]
-      attachments.push({
-        id: i + 1,
-        name: `${name}_${i + 1}.${type}`,
-        type,
-        size: `${Math.floor(Math.random() * 5) + 1} MB`,
-      })
-    }
-  
-    return attachments
-  }
-  
-  /**
-   * Get initials from a name
-   * @param {string} name - Full name
-   * @returns {string} - Initials
-   */
-  function getInitials(name) {
-    return name
-      .split(" ")
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("")
-      .substring(0, 2)
-  }
-  
-  export { getNotes, getNoteById, createNote }
-  
+
+  return result;
+}
+
+/**
+ * Logout user
+ * @returns {void}
+ */
+function logout() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("current_user");
+  window.location.href = "/index.html";
+}
+
+/**
+ * Get current user
+ * @returns {Object|null} - Current user object or null if not logged in
+ */
+function getCurrentUser() {
+  const userJSON = localStorage.getItem("current_user");
+  return userJSON ? JSON.parse(userJSON) : null;
+}
+
+/**
+ * Check if user is logged in
+ * @returns {boolean} - True if user is logged in, false otherwise
+ */
+function isLoggedIn() {
+  return !!getAuthToken();
+}
+
+/**
+ * Add comment to a note
+ * @param {number} noteId - Note ID
+ * @param {Object} commentData - Comment data
+ * @returns {Promise} - Promise with created comment
+ */
+async function addComment(noteId, commentData) {
+  const result = await fetchData(`${API_ENDPOINTS.notes}/${noteId}/comments`, {
+    method: "POST",
+    body: JSON.stringify(commentData),
+  });
+
+  return result;
+}
+
+export { 
+  getNotes, 
+  getNoteById, 
+  createNote, 
+  updateNote, 
+  deleteNote, 
+  getCourses,
+  getTags,
+  login, 
+  register,
+  logout,
+  getCurrentUser,
+  isLoggedIn,
+  addComment
+}

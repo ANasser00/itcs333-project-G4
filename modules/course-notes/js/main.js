@@ -2,18 +2,12 @@
  * Main application logic for Course Notes
  * Initializes and connects all components
  */
-
-import { getNotes, getNoteById } from "./api.js"
+import { getNotes, getNoteById, getCourses, createNote } from "./api.js"
 import {
   initLoadingIndicator,
   renderNotesList,
   renderPagination,
-  renderNoteDetail,
-  initFormValidation,
-  initSearch,
-  initFilters,
-  initSort,
-  updateStats,
+  renderNoteDetail
 } from "./ui.js"
 import { getUrlParams } from "./utils.js"
 
@@ -23,19 +17,8 @@ const state = {
   pagination: {
     currentPage: 1,
     totalPages: 0,
-    totalItems: 0,
-  },
-  fetchAll: false,
-  filters: {
-    query: "",
-    course: null,
-  },
-  sort: "newest",
-  stats: {
-    totalNotes: 0,
-    totalCourses: 6,
-    totalShared: 0,
-  },
+    totalItems: 0
+  }
 }
 
 /**
@@ -50,103 +33,26 @@ async function initNotesListingPage() {
   // Get DOM elements
   const notesContainer = document.querySelector(".grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6")
   const paginationContainer = document.querySelector(".flex.justify-center.mt-12")
-  const searchForm = document.querySelector("#search-form")
-  const filterButtons = document.querySelectorAll(".flex.flex-wrap.gap-2.mb-8 button")
-  const sortButton = document.querySelector(".sort-button")
 
-  // Initialize interactive features
-  if (searchForm) {
-    initSearch(searchForm, handleSearch)
-  }
-
-  if (filterButtons && filterButtons.length) {
-    initFilters(filterButtons, handleFilter)
-  }
-
-  if (sortButton) {
-    initSort(sortButton, handleSort)
-  }
-
-  // Load notes
+  // Load initial notes
   await loadNotes()
 
   // Handle pagination
   function handlePageChange(page) {
     state.pagination.currentPage = page
     loadNotes()
-
-    // Scroll to top of notes section
     document.getElementById("notes").scrollIntoView({ behavior: "smooth" })
   }
 
-  // Handle search
-  function handleSearch(searchParams) {
-    state.filters.query = searchParams.query || ""
-    state.pagination.currentPage = 1
-    loadNotes()
-  }
-
-  // Handle filter
-  function handleFilter(filterParams) {
-    state.filters.course = filterParams.course;
-    state.pagination.currentPage = 1;
-    state.fetchAll = !!filterParams.course;
-    loadNotes();
-  }
-
-  // Handle sort
-  function handleSort(sortParams) {
-    state.sort = sortParams.sort || "newest"
-    loadNotes()
-  }
-
-  // Load notes with current state
+  // Load notes
   async function loadNotes() {
     try {
-      // Convert state to API parameters
-      const params = {
-        q: state.filters.query,
-        // _page: state.pagination.currentPage,
-        // _limit: 10,
-      }
-
-      if (state.fetchAll) {
-        params._limit = 500
-      } else {
-        params._page = state.pagination.currentPage
-        params._limit = 10
-        state.fetchAll = false
-      }
-      
-
-      // Add sort parameter
-      switch (state.sort) {
-        case "oldest":
-          params._sort = "id"
-          params._order = "asc"
-          break
-        case "title_asc":
-          params._sort = "title"
-          params._order = "asc"
-          break
-        case "title_desc":
-          params._sort = "title"
-          params._order = "desc"
-          break
-        case "newest":
-        default:
-          params._sort = "id"
-          params._order = "desc"
-          break
-      }
-
-      // Fetch notes with filters
       const result = await getNotes(
-        { ...params, course: state.filters.course }, // filters
-        state.pagination.currentPage,                // page
-        9,                                           // limit
-        state.fetchAll                               // fetchAll flag
+        {},                           // no filters
+        state.pagination.currentPage, // page
+        9                             // limit
       )
+
       if (result.error) {
         throw new Error(result.error)
       }
@@ -154,8 +60,6 @@ async function initNotesListingPage() {
       // Update state
       state.notes = result.notes
       state.pagination = result.pagination
-      state.stats.totalNotes = result.pagination.totalItems // This should now correctly show the total count
-      state.stats.totalShared = Math.floor(result.pagination.totalItems / 3) // Adjust the calculation for shared notes
 
       // Update UI
       if (notesContainer) {
@@ -167,7 +71,7 @@ async function initNotesListingPage() {
       }
 
       // Update stats
-      updateStats(state.stats)
+      updateStats()
     } catch (error) {
       console.error("Error loading notes:", error)
       if (notesContainer) {
@@ -230,20 +134,103 @@ async function initNoteDetailPage() {
   }
 }
 
-/**
- * Initialize the create note page
- */
-function initCreateNotePage() {
-  console.log("Initializing create note page")
+async function initNoteAddPage() {
+  console.log("Initializing note add page")
 
   // Initialize UI components
   initLoadingIndicator()
 
   // Get DOM elements
-  const createNoteForm = document.querySelector("#create-note-form")
+  const courseSelect = document.getElementById("course")
+  const createNoteForm = document.getElementById("create-note-form")
 
-  // Initialize form validation
-  initFormValidation(createNoteForm)
+  // Load courses and populate dropdown
+  await loadCourses()
+
+  // Add form submit handler
+  if (createNoteForm) {
+    createNoteForm.addEventListener("submit", handleFormSubmit)
+  }
+
+  // Load courses and populate dropdown
+  async function loadCourses() {
+    try {
+      const result = await getCourses()
+
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      // Populate course dropdown
+      if (courseSelect && result.data) {
+        // Clear existing options
+        courseSelect.innerHTML = '<option value="">Select a course</option>'
+
+        // Add course options
+        result.data.forEach(course => {
+          const option = document.createElement("option")
+          option.value = course.id
+          option.textContent = `${course.course_code} - ${course.course_name}`
+          courseSelect.appendChild(option)
+        })
+      }
+    } catch (error) {
+      console.error("Error loading courses:", error)
+      if (courseSelect) {
+        courseSelect.innerHTML = '<option value="">Error loading courses</option>'
+      }
+    }
+  }
+
+  // Handle form submission
+  async function handleFormSubmit(event) {
+    event.preventDefault()
+
+    // Get form data
+    const formData = new FormData(createNoteForm)
+    const noteData = {
+      title: formData.get("title"),
+      content: formData.get("content"),
+      course_id: formData.get("course"),
+    }
+
+    try {
+      // Create note
+      const result = await createNote(noteData)
+
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      // Show success message
+      alert("Note created successfully!")
+
+      // Redirect to notes listing
+      window.location.href = "../index.html"
+    } catch (error) {
+      console.error("Error creating note:", error)
+      alert(`Error creating note: ${error.message}`)
+    }
+  }
+}
+
+/**
+ * Update the stats section with total notes and unique courses
+ */
+function updateStats() {
+  const totalNotesElement = document.querySelector('.stats-total-notes')
+  const totalCoursesElement = document.querySelector('.stats-total-courses')
+
+  const totalNotes = state.notes.length;
+  if (totalNotesElement) {
+    totalNotesElement.textContent = totalNotes || '0'
+  }
+  
+  if (totalCoursesElement && state.notes.length > 0) {
+    // Get unique course codes
+    const uniqueCourses = new Set(state.notes.map(note => note.course || '').filter(Boolean))
+    totalCoursesElement.textContent = uniqueCourses.size.toString()
+  }
 }
 
 /**
@@ -258,7 +245,7 @@ function initApp() {
   } else if (currentPath.includes("detail.html")) {
     initNoteDetailPage()
   } else if (currentPath.includes("create.html")) {
-    initCreateNotePage()
+    initNoteAddPage()
   }
 }
 
