@@ -1,7 +1,7 @@
 // ==================== Fetch and Display News ====================
 
 // Constants
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
+const API_URL = 'https://439e029c-2b83-4704-b032-707aef303847-00-2nzhhapl27o7b.pike.replit.dev/';
 const newsPerPage = 6;
 
 // Global variables
@@ -19,32 +19,97 @@ const categoryFilter = document.getElementById('category-filter');
 const dateSort = document.getElementById('date-sort');
 
 // Show loading indicator before fetching news
-if (newsContainer || viewNewsContainer) {
+function initializeNews() {
     if (newsContainer) newsContainer.innerHTML = '<p class="text-center text-gray-600">Loading news...</p>';
     if (viewNewsContainer) viewNewsContainer.innerHTML = '<p class="text-center text-gray-600">Loading news...</p>';
 
+    // Fetch data from API
     fetch(API_URL)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch news');
+                throw new Error(`Failed to fetch news: ${response.status} ${response.statusText}`);
             }
             return response.json();
         })
         .then(data => {
-            allNews = data.slice(0, 30).map(item => ({
-                ...item,
-                author: "John Doe",
-                category: ["Events", "Announcement", "Opportunity"][Math.floor(Math.random() * 3)],
-                date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-                image: "https://via.placeholder.com/600x300"
+            console.log('Fetched data:', data); // Debug output
+
+            if (!data || data.length === 0) {
+                throw new Error('No news data received');
+            }
+
+            // Process and format the news data
+            allNews = data.map(item => ({
+                id: item.id,
+                title: item.title,
+                body: item.content || item.body, // Handle different data structures
+                author: item.author || "Unknown",
+                category: item.category || "Uncategorized",
+                date: new Date(item.publish_date || Date.now()),
+                image: item.image_url || "https://via.placeholder.com/600x300"
             }));
+
+            // Render the news
             renderNews();
             renderPagination();
         })
         .catch(error => {
-            if (newsContainer) newsContainer.innerHTML = `<p class="text-red-500">${error.message}</p>`;
-            if (viewNewsContainer) viewNewsContainer.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+            console.error('Error fetching news:', error);
+
+            // Display error message
+            const errorMessage = `
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+                    <p>Error loading news: ${error.message}</p>
+                    <p class="mt-2">Please check your network connection and API endpoint.</p>
+                </div>
+            `;
+
+            if (newsContainer) newsContainer.innerHTML = errorMessage;
+            if (viewNewsContainer) viewNewsContainer.innerHTML = errorMessage;
+
+            // Load fallback data for development/testing
+            loadFallbackData();
         });
+}
+
+// Load fallback data if API fetch fails
+function loadFallbackData() {
+    console.log('Loading fallback data');
+
+    // Fallback news data
+    const fallbackData = [
+        {"id":"1","title":"Campus Job Fair Announced","author":"Admin","category":"Opportunity","content":"A campus-wide job fair will be held next week featuring top local employers.","image_url":"https://via.placeholder.com/600x300","publish_date":"2025-05-13"},
+        {"id":"2","title":"Library Hours Extended During Exams","author":"Library Staff","category":"Announcement","content":"The library will now be open until midnight during the exam period.","image_url":"https://via.placeholder.com/600x300","publish_date":"2025-05-14"},
+        {"id":"3","title":"IT Club Workshop on Web Development","author":"IT Club","category":"Events","content":"Join us for a hands-on web development workshop this Thursday.","image_url":"https://via.placeholder.com/600x300","publish_date":"2025-05-10"},
+        {"id":"4","title":"Summer Internship Program Open","author":"Career Services","category":"Opportunity","content":"Apply now for summer internships with top Bahraini companies.","image_url":"https://via.placeholder.com/600x300","publish_date":"2025-05-09"},
+        {"id":"5","title":"New Cafeteria Menu Released","author":"Cafeteria Team","category":"Announcement","content":"Check out the new healthy and affordable menu starting this week.","image_url":"https://via.placeholder.com/600x300","publish_date":"2025-05-08"}
+    ];
+
+    // Process and format the fallback news data
+    allNews = fallbackData.map(item => ({
+        id: item.id,
+        title: item.title,
+        body: item.content || item.body,
+        author: item.author || "Unknown",
+        category: item.category || "Uncategorized",
+        date: new Date(item.publish_date || Date.now()),
+        image: item.image_url || "https://via.placeholder.com/600x300"
+    }));
+
+    // Add notice about using fallback data
+    if (newsContainer) {
+        const fallbackNotice = document.createElement('div');
+        fallbackNotice.className = 'bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4';
+        fallbackNotice.innerHTML = `
+            <p>⚠️ Using fallback data. Could not connect to API.</p>
+            <p class="mt-1">Check the console for more details.</p>
+        `;
+        newsContainer.prepend(fallbackNotice);
+    }
+
+    // Render the news with fallback data
+    renderNews();
+    renderPagination();
 }
 
 // Render news items
@@ -70,7 +135,7 @@ function renderNews() {
         newsCard.innerHTML = `
             <h2 class="text-xl font-bold mb-2">${news.title}</h2>
             <p class="text-sm text-gray-500 mb-2">${news.category} | ${news.date.toDateString()}</p>
-            <p class="text-gray-700 mb-4">${news.body.substring(0, 100)}...</p>
+            <p class="text-gray-700 mb-4">${news.body.substring(0, 100)}${news.body.length > 100 ? '...' : ''}</p>
             <a href="read.html?id=${news.id}" class="text-blue-500 hover:underline">Read More</a>
         `;
 
@@ -168,34 +233,62 @@ if (dateSort) {
 
 // ==================== Display Single News in read.html ====================
 
-if (newsDetailsContainer) {
+function loadNewsDetails() {
+    if (!newsDetailsContainer) return;
+
     newsDetailsContainer.innerHTML = '<p class="text-center text-gray-600">Loading news details...</p>';
 
     const params = new URLSearchParams(window.location.search);
     const newsId = params.get('id');
 
-    if (newsId) {
-        fetch(`${API_URL}/${newsId}`)
-            .then(response => response.json())
-            .then(news => {
-                const fakeAuthor = "John Doe";
-                const fakeCategory = ["Events", "Announcement", "Opportunity"][Math.floor(Math.random() * 3)];
-                const fakeDate = new Date(Date.now() - Math.floor(Math.random() * 10000000000));
-                const fakeImage = "https://via.placeholder.com/600x300";
+    if (!newsId) {
+        newsDetailsContainer.innerHTML = '<p class="text-red-500">No news ID specified</p>';
+        return;
+    }
 
-                newsDetailsContainer.innerHTML = `
-                    <h2 class="text-3xl font-bold mb-4">${news.title}</h2>
-                    <p class="text-gray-600 mb-2"><strong>Author:</strong> ${fakeAuthor}</p>
-                    <p class="text-gray-600 mb-2"><strong>Category:</strong> ${fakeCategory}</p>
-                    <p class="text-gray-600 mb-4"><strong>Date:</strong> ${fakeDate.toDateString()}</p>
-                    <img src="${fakeImage}" alt="News Image" class="rounded mb-6">
-                    <p class="text-gray-700">${news.body}</p>
-                `;
+    // First try to find the news in the allNews array
+    const newsItem = allNews.find(item => item.id === newsId);
+
+    if (newsItem) {
+        displayNewsDetails(newsItem);
+    } else {
+        // If not found in allNews, fetch directly from API
+        fetch(`${API_URL}?id=${newsId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch news details');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    // Handle case where API returns an array
+                    displayNewsDetails(data[0]);
+                } else if (data && data.id) {
+                    // Handle case where API returns a single object
+                    displayNewsDetails(data);
+                } else {
+                    throw new Error('News not found');
+                }
             })
             .catch(error => {
+                console.error('Error fetching news details:', error);
                 newsDetailsContainer.innerHTML = `<p class="text-red-500">${error.message}</p>`;
             });
     }
+}
+
+function displayNewsDetails(newsItem) {
+    if (!newsDetailsContainer) return;
+
+    newsDetailsContainer.innerHTML = `
+        <h2 class="text-3xl font-bold mb-4">${newsItem.title}</h2>
+        <p class="text-gray-600 mb-2"><strong>Author:</strong> ${newsItem.author}</p>
+        <p class="text-gray-600 mb-2"><strong>Category:</strong> ${newsItem.category}</p>
+        <p class="text-gray-600 mb-4"><strong>Date:</strong> ${new Date(newsItem.date).toDateString()}</p>
+        <img src="${newsItem.image}" alt="News Image" class="rounded mb-6">
+        <p class="text-gray-700">${newsItem.body || newsItem.content}</p>
+    `;
 }
 
 // ==================== Form Validation for add.html ====================
@@ -246,4 +339,13 @@ if (commentForm) {
             commentForm.reset();
         }
     });
+}
+
+// Initialize the application
+if (newsContainer || viewNewsContainer) {
+    initializeNews();
+}
+
+if (newsDetailsContainer) {
+    loadNewsDetails();
 }
