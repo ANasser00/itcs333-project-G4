@@ -32,56 +32,115 @@ async function initNotesListingPage() {
 
   // Get DOM elements
   const notesContainer = document.querySelector(".grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6")
-  const paginationContainer = document.querySelector(".flex.justify-center.mt-12")
+  const paginationContainer = document.querySelector("#pagination-container") || document.querySelector(".flex.justify-center.mt-12")
+  
+  console.log("Pagination container found:", paginationContainer !== null)
 
-  // Load initial notes
-  await loadNotes()
+  // Define notes per page constant
+  const NOTES_PER_PAGE = 6;
+  
+  // Store all notes for client-side pagination
+  let allNotes = [];
+  
+  // Initial load of all notes
+  await loadAllNotes();
+  
+  // Then display the first page
+  displayNotesForCurrentPage();
 
-  // Handle pagination
-  function handlePageChange(page) {
-    state.pagination.currentPage = page
-    loadNotes()
-    document.getElementById("notes").scrollIntoView({ behavior: "smooth" })
-  }
-
-  // Load notes
-  async function loadNotes() {
+  // Load all notes once
+  async function loadAllNotes() {
     try {
+      document.dispatchEvent(new CustomEvent("loading:start"));
+      
+      // Fetch all notes at once (no pagination in API call)
       const result = await getNotes(
-        {},                           // no filters
-        state.pagination.currentPage, // page
-        9                             // limit
-      )
+        {},   // no filters
+        1,    // page 1
+        100   // large limit to get all notes
+      );
 
       if (result.error) {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
 
-      // Update state
-      state.notes = result.notes
-      state.pagination = result.pagination
-
-      // Update UI
-      if (notesContainer) {
-        renderNotesList(state.notes, notesContainer)
-      }
-
-      if (paginationContainer) {
-        renderPagination(state.pagination, handlePageChange, paginationContainer)
-      }
-
-      // Update stats
-      updateStats()
+      // Store all notes
+      allNotes = result.notes || [];
+      
+      // Calculate total pages
+      const totalPages = Math.ceil(allNotes.length / NOTES_PER_PAGE);
+      
+      // Update pagination state
+      state.pagination = {
+        currentPage: 1,
+        totalPages: Math.max(totalPages, 1), // At least 1 page
+        totalItems: allNotes.length
+      };
+      
+      console.log(`Loaded ${allNotes.length} total notes, calculated ${state.pagination.totalPages} pages`);
+      
+      document.dispatchEvent(new CustomEvent("loading:end"));
     } catch (error) {
-      console.error("Error loading notes:", error)
+      console.error("Error loading notes:", error);
+      document.dispatchEvent(new CustomEvent("loading:end"));
+      
       if (notesContainer) {
         notesContainer.innerHTML = `
           <div class="text-center py-8 col-span-3">
             <p class="text-red-500">Error loading notes. Please try again later.</p>
           </div>
-        `
+        `;
       }
     }
+  }
+
+  // Display notes for the current page
+  function displayNotesForCurrentPage() {
+    // Calculate start and end indices for current page
+    const startIndex = (state.pagination.currentPage - 1) * NOTES_PER_PAGE;
+    const endIndex = startIndex + NOTES_PER_PAGE;
+    
+    // Get notes for current page
+    state.notes = allNotes.slice(startIndex, endIndex);
+    
+    console.log(`Displaying page ${state.pagination.currentPage}: notes ${startIndex+1} to ${Math.min(endIndex, allNotes.length)} of ${allNotes.length}`);
+
+    // Update UI
+    if (notesContainer) {
+      // Check if there are notes to display for this page
+      if (state.notes && state.notes.length > 0) {
+        renderNotesList(state.notes, notesContainer);
+      } else {
+        // Display "No more notes" message when page has no notes
+        notesContainer.innerHTML = `
+          <div class="col-span-3 text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <h3 class="text-xl font-medium text-gray-500">No more notes</h3>
+            <p class="text-gray-400 mt-2">There are no notes available on this page.</p>
+            <button onclick="window.location.href='index.html'" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+              Back to first page
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    if (paginationContainer) {
+      renderPagination(state.pagination, handlePageChange, paginationContainer);
+    }
+
+    // Update stats
+    updateStats();
+  }
+
+  // Handle pagination
+  function handlePageChange(page) {
+    console.log("Page changed to:", page);
+    state.pagination.currentPage = page;
+    displayNotesForCurrentPage();
+    document.getElementById("notes").scrollIntoView({ behavior: "smooth" });
   }
 }
 
@@ -221,14 +280,23 @@ function updateStats() {
   const totalNotesElement = document.querySelector('.stats-total-notes')
   const totalCoursesElement = document.querySelector('.stats-total-courses')
 
-  const totalNotes = state.notes.length;
   if (totalNotesElement) {
-    totalNotesElement.textContent = totalNotes || '0'
+    totalNotesElement.textContent = state.pagination.totalItems || '0'
   }
   
-  if (totalCoursesElement && state.notes.length > 0) {
-    // Get unique course codes
-    const uniqueCourses = new Set(state.notes.map(note => note.course || '').filter(Boolean))
+  if (totalCoursesElement) {
+    // Get unique course codes from all notes
+    const uniqueCourses = new Set()
+    
+    // Use the notes we have in the current state
+    if (state.notes && state.notes.length > 0) {
+      state.notes.forEach(note => {
+        if (note.course) {
+          uniqueCourses.add(note.course)
+        }
+      })
+    }
+    
     totalCoursesElement.textContent = uniqueCourses.size.toString()
   }
 }

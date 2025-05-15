@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Notes - Main Listing</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <!-- Remove the problematic stylesheet reference -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <style>
         /* Add any custom styles here */
@@ -19,145 +18,43 @@
         .modal.active .modal-content {
             transform: scale(1);
         }
+        /* Add pagination styles */
+        .pagination-active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .pagination-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-center items-center">
                 <div class="flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                     </svg>
                     <h1 class="text-2xl font-bold text-secondary-800">CourseNotes</h1>
                 </div>
-                
-                <!-- User section (shown when logged in) -->
-                <div id="user-section" class="flex items-center space-x-4 hidden">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-secondary-700">Welcome, <span class="user-name font-medium">User</span></span>
-                        <button id="logout-btn" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Logout</button>
-                    </div>
-                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold">
-                        JS
-                    </div>
-                </div>
-                
-                <!-- Auth buttons (shown when logged out) -->
-                <div id="auth-section" class="flex items-center space-x-2">
-                    <button id="login-button" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-secondary-700 hover:bg-gray-50 transition-colors">
-                        Login
-                    </button>
-                    <button id="register-button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Sign Up
-                    </button>
-                </div>
             </div>
         </div>
     </header>
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0">
-        <div class="modal-content bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <!-- Login Form -->
-            <div id="login-container" class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-secondary-800">Login</h2>
-                    <button class="modal-close text-gray-500 hover:text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <form id="login-form">
-                    <div class="mb-4">
-                        <label for="login-email" class="block text-sm font-medium text-secondary-700 mb-1">Email</label>
-                        <input type="email" id="login-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label for="login-password" class="block text-sm font-medium text-secondary-700 mb-1">Password</label>
-                        <input type="password" id="login-password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="flex flex-col space-y-4">
-                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                            Login
-                        </button>
-                        
-                        <div class="text-center">
-                            <span class="text-secondary-600 text-sm">Don't have an account?</span>
-                            <button id="switch-to-register" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-1">Sign up</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Register Form -->
-            <div id="register-container" class="p-6 hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-secondary-800">Create Account</h2>
-                    <button class="modal-close text-gray-500 hover:text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <form id="register-form">
-                    <div class="mb-4">
-                        <label for="register-username" class="block text-sm font-medium text-secondary-700 mb-1">Username</label>
-                        <input type="text" id="register-username" name="username" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="register-email" class="block text-sm font-medium text-secondary-700 mb-1">Email</label>
-                        <input type="email" id="register-email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="register-password" class="block text-sm font-medium text-secondary-700 mb-1">Password</label>
-                        <input type="password" id="register-password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label for="register-confirm-password" class="block text-sm font-medium text-secondary-700 mb-1">Confirm Password</label>
-                        <input type="password" id="register-confirm-password" name="confirm_password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="flex flex-col space-y-4">
-                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                            Create Account
-                        </button>
-                        
-                        <div class="text-center">
-                            <span class="text-secondary-600 text-sm">Already have an account?</span>
-                            <button id="switch-to-login" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-1">Login</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Rest of your HTML content remains the same -->
     <main class="flex-grow">
         <!-- Stats overview -->
         <section class="py-8 bg-white border-b border-gray-200">
             <div class="container mx-auto px-4">
-                <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <div class="grid grid-cols-2 gap-6 max-w-3xl mx-auto">
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-500 stats-total-notes">
-                            <span class="inline-block animate-pulse">...</span>
-                        </p>
+                        <p class="text-3xl font-bold text-blue-500 stats-total-notes">0</p>
                         <p class="text-secondary-600">Total Notes</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-500 stats-total-courses">
-                            <span class="inline-block animate-pulse">...</span>
-                        </p>
+                        <p class="text-3xl font-bold text-blue-500 stats-total-courses">0</p>
                         <p class="text-secondary-600">Courses</p>
                     </div>
                 </div>
@@ -167,14 +64,13 @@
         <!-- Main content -->
         <section id="notes" class="py-12">
             <div class="container mx-auto px-4">
-                <!-- Your existing content -->
-                <!-- Notes grid and other elements -->
+                <!-- Notes grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Notes will be dynamically inserted here by JavaScript -->
                 </div>
 
                 <!-- Pagination -->
-                <div class="flex justify-center mt-12">
+                <div class="flex justify-center mt-12" id="pagination-container">
                     <!-- Pagination will be dynamically inserted here by JavaScript -->
                 </div>
             </div>
@@ -194,8 +90,8 @@
     <!-- Simplified Footer -->
     <footer class="bg-white border-t border-gray-200 py-6">
         <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+            <div class="flex justify-center items-center">
+                <div class="flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                     </svg>
@@ -205,97 +101,79 @@
         </div>
     </footer>
 
+    <div class="hidden" id="pagination-template">
+        <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <a href="#" class="pagination-prev relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            <span class="pagination-pages-container"></span>
+            <a href="#" class="pagination-next relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+        </nav>
+    </div>
+
     <!-- JavaScript -->
     <script type="module" src="js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Modal functionality
-            const authModal = document.getElementById("auth-modal");
-            const loginButton = document.getElementById("login-button");
-            const registerButton = document.getElementById("register-button");
-            const closeButtons = document.querySelectorAll(".modal-close");
-            const switchToRegisterBtn = document.getElementById("switch-to-register");
-            const switchToLoginBtn = document.getElementById("switch-to-login");
+            // Any remaining functionality for the notes page
+            // This no longer includes authentication modal logic
             
-            // Open modal functions
-            function openModal() {
-                authModal.classList.remove("hidden");
-                setTimeout(() => {
-                    authModal.classList.add("active");
-                    authModal.classList.add("opacity-100");
-                }, 10);
+            // You could add initialization code here for the notes display
+            // For example, populating the stats counters with actual data
+            
+            // Example placeholder for notes content that would be generated
+            // by your JavaScript application
+            const notesContainer = document.querySelector('#notes .grid');
+            
+            // Sample function to create a note card without the 3-dot menu
+            function createNoteCard(note) {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'bg-white rounded-xl shadow-soft overflow-hidden';
+                noteCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-800">${note.title}</h3>
+                            <p class="text-sm text-secondary-600">${note.course}</p>
+                        </div>
+                        <div class="mb-4">
+                            <p class="text-secondary-700 line-clamp-3">${note.content}</p>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-secondary-500">${note.date}</span>
+                            <a href="pages/view.html?id=${note.id}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View</a>
+                        </div>
+                    </div>
+                `;
+                return noteCard;
             }
             
-            function closeModal() {
-                authModal.classList.remove("active");
-                authModal.classList.remove("opacity-100");
-                setTimeout(() => {
-                    authModal.classList.add("hidden");
-                }, 300);
+            // Example of how you might render notes (for demonstration)
+            // Actual implementation would depend on your data source
+            /*
+            if (notesContainer) {
+                const sampleNotes = [
+                    { id: 1, title: "Introduction to Biology", course: "BIO101", content: "Overview of cellular structures...", date: "May 10, 2025" },
+                    { id: 2, title: "Physics Fundamentals", course: "PHY201", content: "Newton's laws of motion...", date: "May 12, 2025" }
+                ];
+                
+                sampleNotes.forEach(note => {
+                    notesContainer.appendChild(createNoteCard(note));
+                });
+                
+                // Update stats
+                document.querySelector('.stats-total-notes').textContent = sampleNotes.length;
+                document.querySelector('.stats-total-courses').textContent = new Set(sampleNotes.map(n => n.course)).size;
             }
-            
-            // Event listeners for opening modal
-            loginButton.addEventListener("click", () => {
-                document.getElementById("login-container").classList.remove("hidden");
-                document.getElementById("register-container").classList.add("hidden");
-                openModal();
-            });
-            
-            registerButton.addEventListener("click", () => {
-                document.getElementById("register-container").classList.remove("hidden");
-                document.getElementById("login-container").classList.add("hidden");
-                openModal();
-            });
-            
-            // Close modal when clicking close button or outside
-            closeButtons.forEach(button => {
-                button.addEventListener("click", closeModal);
-            });
-            
-            authModal.addEventListener("click", (e) => {
-                if (e.target === authModal) {
-                    closeModal();
-                }
-            });
-            
-            // Switch between login and register forms
-            switchToRegisterBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                document.getElementById("login-container").classList.add("hidden");
-                document.getElementById("register-container").classList.remove("hidden");
-            });
-            
-            switchToLoginBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                document.getElementById("register-container").classList.add("hidden");
-                document.getElementById("login-container").classList.remove("hidden");
-            });
-            
-            // Simple form handling for testing
-            const loginForm = document.getElementById("login-form");
-            const registerForm = document.getElementById("register-form");
-            
-            loginForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const email = document.getElementById("login-email").value;
-                const password = document.getElementById("login-password").value;
-                
-                console.log("Login attempt:", { email, password });
-                // Here you would normally call your API
-                alert(`Login attempt with email: ${email}`);
-            });
-            
-            registerForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const username = document.getElementById("register-username").value;
-                const email = document.getElementById("register-email").value;
-                const password = document.getElementById("register-password").value;
-                
-                console.log("Register attempt:", { username, email, password });
-                // Here you would normally call your API
-                alert(`Registration attempt with username: ${username}, email: ${email}`);
-            });
+            */
         });
     </script>
 </body>
-</html> 
+</html>
