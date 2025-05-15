@@ -4,6 +4,7 @@
  * Connects to Replit backend server running MariaDB
  */
 
+
 // API endpoints - update this to your Replit URL
 const API_BASE_URL = "https://3de20392-c7ee-4889-996e-a1c21667d9a9-00-3aqyltz0su95g.sisko.replit.dev";
 
@@ -180,13 +181,37 @@ async function createNote(noteData) {
  * @returns {Promise} - Promise with updated note
  */
 async function updateNote(id, noteData) {
-  const result = await fetchData(`${API_ENDPOINTS.notes}/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(noteData),
-  });
+  try {
+    // Adapt the noteData to match the PHP backend expectations
+    const adaptedData = {
+      title: noteData.title,
+      content: noteData.content,
+      course_id: noteData.course_id || noteData.course, // Support both formats
+    }
 
-  return result;
+    console.log("Updating note with data:", adaptedData)
+
+    // Declare fetchData and API_ENDPOINTS variables
+   
+    
+
+    // Use the fetchData function from the module
+    const result = await fetchData(`${API_ENDPOINTS.notes}_update.php?id=${id}`, {
+      method: "POST", // Use POST as specified in your PHP file
+      body: JSON.stringify(adaptedData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    return result
+  } catch (error) {
+    console.error("Error in updateNote:", error)
+    return { data: null, error: error.message }
+  }
 }
+
+
 
 /**
  * Delete a note
