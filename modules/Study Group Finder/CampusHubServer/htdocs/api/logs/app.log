@@ -1,0 +1,35 @@
+[2025-05-14 17:20:59] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:21:02] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:21:36] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:22:34] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:22:37] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:24:02] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:24:17] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:28:14] [INFO] API Request: POST groups/create.php - Data: {"title":"date","course_code":"ITCS405","academic_year":"1st","meeting_location":"libery rom 103","description":"welcome","contact_email":"d@gmail.com"}
+[2025-05-14 17:28:17] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:28:23] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:28:24] [ERROR] Read group error: SQLSTATE[42601]: Syntax error: 7 ERROR:  LIMIT #,# syntax is not supported
+LINE 6:                   LIMIT 0,1
+                          ^
+HINT:  Use separate LIMIT and OFFSET clauses.
+[2025-05-14 17:28:59] [INFO] API Request: GET groups/read.php - Data: {"id":"undefined"}
+[2025-05-14 17:29:01] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:29:14] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:29:14] [ERROR] Read group error: SQLSTATE[42601]: Syntax error: 7 ERROR:  LIMIT #,# syntax is not supported
+LINE 6:                   LIMIT 0,1
+                          ^
+HINT:  Use separate LIMIT and OFFSET clauses.
+[2025-05-14 17:29:19] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:32:04] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:32:09] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:32:11] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:32:22] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:32:22] [INFO] API Request: PUT groups/update.php - Data: {"id":"1","comments":[{"id":1,"author":{"name":"Sara Mohammad","initials":"SM"},"date":"2025-05-14 17:17:33.318625","content":"Looking forward to our next meeting!"}]}
+[2025-05-14 17:32:24] [INFO] Comments update requested for group 1
+[2025-05-14 17:32:34] [INFO] API Request: GET groups/read.php - Data: {"id":"1"}
+[2025-05-14 17:32:35] [INFO] API Request: PUT groups/update.php - Data: {"id":"1","comments":[{"id":1,"author":{"name":"Sara Mohammad","initials":"SM"},"date":"2025-05-14 17:17:33.318625","content":"Looking forward to our next meeting!"},{"id":2,"author":{"name":"David Chen","initials":"DC"},"date":"2025-05-14 17:17:33.318625","content":"Can we focus on dynamic programming this week?"},{"author":{"name":"Sara Mohammad","initials":"SM"},"date":"2025-05-14T17:32:38.456Z","content":"hello"}]}
+[2025-05-14 17:32:35] [INFO] Comments update requested for group 1
+[2025-05-14 17:34:33] [INFO] API Request: DELETE groups/delete.php - Data: {"id":"1"}
+[2025-05-14 17:34:40] [INFO] API Request: DELETE groups/delete.php - Data: {"id":"1"}
+[2025-05-14 17:34:44] [INFO] API Request: GET groups/read.php - Data: []
+[2025-05-14 17:34:55] [INFO] API Request: GET groups/read.php - Data: []
