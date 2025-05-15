@@ -1,6 +1,3 @@
-// Replit URL
-const REPLIT_URL = 'https://ba1b6159-e612-478e-8f9f-b6d68eb234b8-00-19q8fejejobbo.spock.replit.dev';
-
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Create page loaded');
@@ -39,13 +36,13 @@ async function handleCreateSubmit(e) {
   showLoading();
   
   try {
-    // Get form elements (with fallbacks in case IDs are different)
-    const titleInput = document.getElementById('title') || document.querySelector('input[name="title"]');
-    const courseInput = document.getElementById('course') || document.querySelector('input[name="course"]') || document.querySelector('input[name="course_code"]');
-    const yearInput = document.getElementById('year') || document.querySelector('input[name="year"]') || document.querySelector('input[name="academic_year"]');
-    const descriptionInput = document.getElementById('description') || document.querySelector('textarea[name="description"]');
-    const locationInput = document.getElementById('location') || document.querySelector('input[name="location"]') || document.querySelector('input[name="meeting_location"]');
-    const contactInput = document.getElementById('contact') || document.querySelector('input[name="contact"]') || document.querySelector('input[name="contact_email"]');
+    // Get form elements using the IDs from your HTML
+    const titleInput = document.getElementById('groupName');
+    const courseInput = document.getElementById('courseCode');
+    const yearInput = document.getElementById('year');
+    const descriptionInput = document.getElementById('description');
+    const locationInput = document.getElementById('location');
+    const contactInput = document.getElementById('contact');
     
     // Log what we found
     console.log('Form elements found:', {
@@ -76,10 +73,13 @@ async function handleCreateSubmit(e) {
       return;
     }
     
-    console.log('Submitting to API:', `${REPLIT_URL}/api/groups/create.php`);
+    // Use the full Replit URL for your API
+    const REPLIT_URL = 'https://ba1b6159-e612-478e-8f9f-b6d68eb234b8-00-19q8fejejobbo.spock.replit.dev';
+    const apiUrl = `${REPLIT_URL}/api/groups/create.php`;
+    console.log('Submitting to API:', apiUrl);
     
     // Send data to API
-    const response = await fetch(`${REPLIT_URL}/api/groups/create.php`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
